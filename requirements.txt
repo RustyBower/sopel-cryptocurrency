@@ -1,0 +1,9 @@
+datetime
+requests
+sopel>=6.0,<7
+# Development requirements
+codeclimate-test-reporter
+pycodestyle
+pytest
+pytest-cov
+mock
