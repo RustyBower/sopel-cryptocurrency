@@ -18,45 +18,15 @@ def display(bot, data, currency):
     bot.say('{name} - {price} {currency} (Last Updated: {last_updated})'.format(name=name, price=price, currency=currency.upper(), last_updated=last_updated))
 
 
-def get_rate(bot, symbol, currency='USD'):
+def get_rate(bot, crypto, currency='USD'):
     data = None
-    symbol = symbol.upper()
     # Ensure we are querying on a valid currency
     if currency.upper() in CURRENCIES or currency.upper() == 'USD':
-        if symbol == 'BTC':
-            try:
-                data = requests.get('https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert={currency}'.format(currency=currency)).json()[0]
-                return data
-            except Exception:
-                bot.say('ERROR: Something went wrong while I was getting the exchange rate.')
-                return False
-        elif symbol == 'DOGE':
-            try:
-                data = requests.get('https://api.coinmarketcap.com/v1/ticker/dogecoin/?convert={currency}'.format(currency=currency)).json()[0]
-                return data
-            except Exception:
-                bot.say('ERROR: Something went wrong while I was getting the exchange rate.')
-                return False
-        elif symbol == 'ETH':
-            try:
-                data = requests.get('https://api.coinmarketcap.com/v1/ticker/ethereum/?convert={currency}'.format(currency=currency)).json()[0]
-                return data
-            except Exception:
-                bot.say('ERROR: Something went wrong while I was getting the exchange rate.')
-                return False
-        elif symbol == 'LTC':
-            try:
-                data = requests.get('https://api.coinmarketcap.com/v1/ticker/litecoin/?convert={currency}'.format(currency=currency)).json()[0]
-                return data
-            except Exception:
-                bot.say('ERROR: Something went wrong while I was getting the exchange rate.')
-                return False
-        else:
-            bot.say('ERROR: Unsupported Symbol')
-    else:
-        bot.say('ERROR: Invalid Currency')
-        bot.say('Allowed Currencies: {currencies}'.format(currencies=', '.join(CURRENCIES)))
-        return False
+        try:
+            data = requests.get('https://api.coinmarketcap.com/v1/ticker/{crypto}/?convert={currency}'.format(crypto=crypto, currency=currency)).json()[0]
+            return data
+        except Exception:
+            raise
 
 
 @commands('btc', 'bitcoin')
@@ -66,7 +36,7 @@ def bitcoin(bot, trigger):
     # Set default currency to USD
     currency = trigger.group(2) or 'USD'
     # Get data from API
-    data = get_rate(bot, 'btc', currency)
+    data = get_rate(bot, 'bitcoin', currency)
     # Have the bot print the data
     if data:
         display(bot, data, currency)
@@ -79,7 +49,7 @@ def dogecoin(bot, trigger):
     # Set default currency to USD
     currency = trigger.group(2) or 'USD'
     # Get data from API
-    data = get_rate(bot, 'doge', currency)
+    data = get_rate(bot, 'dogecoin', currency)
     # Have the bot print the data
     if data:
         display(bot, data, currency)
@@ -92,7 +62,7 @@ def ethereum(bot, trigger):
     # Set default currency to USD
     currency = trigger.group(2) or 'USD'
     # Get data from API
-    data = get_rate(bot, 'eth', currency)
+    data = get_rate(bot, 'ethereum', currency)
     # Have the bot print the data
     if data:
         display(bot, data, currency)
@@ -105,7 +75,7 @@ def litecoin(bot, trigger):
     # Set default currency to USD
     currency = trigger.group(2) or 'USD'
     # Get data from API
-    data = get_rate(bot, 'ltc', currency)
+    data = get_rate(bot, 'litecoin', currency)
     # Have the bot print the data
     if data:
         display(bot, data, currency)
