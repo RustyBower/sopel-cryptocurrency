@@ -17,9 +17,9 @@ def display(bot, data, currency):
     print(data['price_{currency}'.format(currency=currency.lower())])
     print(float(data['price_{currency}'.format(currency=currency.lower())]))
     if float(data['price_{currency}'.format(currency=currency.lower())]) > 1:
-      price = round(float(data['price_{currency}'.format(currency=currency.lower())]), 2)
+        price = round(float(data['price_{currency}'.format(currency=currency.lower())]), 2)
     else:
-      price = data['price_{currency}'.format(currency=currency.lower())]
+        price = data['price_{currency}'.format(currency=currency.lower())]
     last_updated = datetime.datetime.utcfromtimestamp(int(data['last_updated'])).strftime('%Y-%m-%d %H:%M:%S UTC')
     bot.say('{name} - {price} {currency} (Last Updated: {last_updated})'.format(name=name, price=price, currency=currency.upper(), last_updated=last_updated))
 
@@ -85,4 +85,3 @@ def litecoin(bot, trigger):
     # Have the bot print the data
     if data:
         display(bot, data, currency)
-
