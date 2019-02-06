@@ -14,8 +14,6 @@ CURRENCIES = ["AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK", "EUR", "GB
 def display(bot, data, currency):
     name = data['name']
     # if price > $1, round to 2 decimals
-    print(data['price_{currency}'.format(currency=currency.lower())])
-    print(float(data['price_{currency}'.format(currency=currency.lower())]))
     if float(data['price_{currency}'.format(currency=currency.lower())]) > 1:
         price = round(float(data['price_{currency}'.format(currency=currency.lower())]), 2)
     else:

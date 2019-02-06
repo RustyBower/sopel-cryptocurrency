@@ -27,9 +27,10 @@ with open('dev-requirements.txt') as dev_requirements_file:
 
 setup(
     name='sopel_modules.cryptocurrency',
-    version='0.0.2',
+    version='0.0.3',
     description='Cryptocurrency Lookup',
     long_description=readme + '\n\n' + history,
+    long_description_content_type='text/markdown',
     author='Rusty Bower',
     author_email='rusty@rustybower.com',
     url='http://github.com/rustybower/sopel-cryptocurrency',
