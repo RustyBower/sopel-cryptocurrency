@@ -1,13 +1,19 @@
 language: python
 python:
-  - '3.5'
-  - '3.6'
+- '3.5'
+- '3.6'
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libenchant-dev
-install: "pip install -e ."
+- sudo apt-get -qq update
+- sudo apt-get install -y libenchant-dev
+install: pip install -e .
 script:
-  # - py.test --cov=idlerpg_site_flask
-  # - codeclimate-test-reporter
-  - pycodestyle --show-source --ignore=E501,E402,E722  ./
-
+- pycodestyle --show-source --ignore=E501,E402,E722  ./
+deploy:
+  provider: pypi
+  user: rustybower
+  password:
+    secure: GRPlDJSWpR63WPCr11LuvgUrf3fRk4A7PtgWQZE3HlAsWnasO1tTHb+SKb1hkSsPWqSDLr8D7RTWj3rq5h5joztNIHRY1CDZn8TgjeuX8iVz7BCJzT0i65KaLjgkUcjaKRII2Qtg81plG53DvRHRyleAQf1lscTkWC77oZfrEVbGG3JAb5p/h2HLkXenyDiWfmte18DIKZ61JWoan9izulXaexGSKcaV+soYlIyIBWCtbwK9qOQbnUOp7K17zvqRYAU4aPq7M7D4RGYnh0D80SZ61KOMz7Calx1G0LVe72xV6X+J9nEzFKamnYQpdTdP+90zLyhXWDO23kd+mNToaTNHCbBl1tHyp0YJL5LbdHvmKLTrAdA8fA3dc+D4R2YnOWE+RSOY30BfBiYxNYRnXFbs2R6hgofmU4cLy5uRU2smZxwJ9iItGFsvJ3K4wc+KymGCyd5exgSI28HuSSjzP5dSnygkgfCZswqgy57uecYdZd78PZHqn+qlVmErOjTeQpLvAQcUWZcHSytQVJr4KezUusBPka9ehOMu0MIsXNDMxiQ14djEpVzI2hyVoxXvQTkJs2Im5236Gzy05tEVVjTsKI4Y/seLimxA7cGAaNOU0rzgBPitK6Y24xn7vv8b7Z0xPGttVzRIzV8Uo6Fz5XbbPnjmqUmbGUJnFG0YWAI=
+  on:
+    tags: true
+    python: '3.5'
+  skip_existing: true
