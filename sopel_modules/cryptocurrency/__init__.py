@@ -6,4 +6,4 @@ from .cryptocurrency import *
 
 __author__ = 'Rusty Bower'
 __email__ = 'rusty@rustybower.com'
-__version__ = '0.0.1'
+__version__ = '0.0.2'
