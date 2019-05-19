@@ -1,6 +1,7 @@
 # coding=utf-8
 # Copyright 2017 Rusty Bower
 # Licensed under the Eiffel Forum License 2
+import arrow
 import datetime
 import json
 import requests
@@ -18,7 +19,8 @@ def display(bot, data, currency):
         price = round(float(data['price_{currency}'.format(currency=currency.lower())]), 2)
     else:
         price = data['price_{currency}'.format(currency=currency.lower())]
-    last_updated = datetime.datetime.utcfromtimestamp(int(data['last_updated'])).strftime('%Y-%m-%d %H:%M:%S UTC')
+    #last_updated = datetime.datetime.utcfromtimestamp(int(data['last_updated'])).strftime('%Y-%m-%d %H:%M:%S UTC')
+    last_updated = arrow.get(datetime.datetime.utcfromtimestamp(int(data['last_updated'])).strftime('%Y-%m-%d %H:%M:%S UTC')).humanize()
     bot.say('{name} - {price} {currency} (Last Updated: {last_updated})'.format(name=name, price=price, currency=currency.upper(), last_updated=last_updated))
 
 
