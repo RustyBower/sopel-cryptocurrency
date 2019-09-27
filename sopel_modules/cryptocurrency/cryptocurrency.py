@@ -19,7 +19,7 @@ def display(bot, data, currency):
         price = round(float(data['price_{currency}'.format(currency=currency.lower())]), 2)
     else:
         price = data['price_{currency}'.format(currency=currency.lower())]
-    last_updated = arrow.get(datetime.datetime.utcfromtimestamp(int(data['last_updated'])).strftime('%Y-%m-%d %H:%M:%S UTC')).humanize()
+    last_updated = arrow.get(data['last_updated'], 'X').humanize()
     bot.say('{name} - {price} {currency} (Last Updated: {last_updated})'.format(name=name, price=price, currency=currency.upper(), last_updated=last_updated))
 
 
