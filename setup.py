@@ -27,7 +27,7 @@ with open('dev-requirements.txt') as dev_requirements_file:
 
 setup(
     name='sopel_modules.cryptocurrency',
-    version='1.0.0',
+    version='1.0.1',
     description='Cryptocurrency Lookup',
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/markdown',
