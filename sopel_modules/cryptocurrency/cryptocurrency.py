@@ -3,10 +3,9 @@
 # Licensed under the Eiffel Forum License 2
 import arrow
 import datetime
-import json
 import requests
 
-from sopel.module import commands, example, NOLIMIT
+from sopel.module import commands, example
 
 # List of valid currencies - https://coinmarketcap.com/api/
 CURRENCIES = ["AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK", "EUR", "GBP", "HKD", "HUF", "IDR", "ILS", "INR", "JPY", "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PKR", "PLN", "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "ZAR"]
