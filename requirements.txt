@@ -1,7 +1,7 @@
 arrow
 datetime
 requests
-sopel>=6.0,<7
+sopel
 # Development requirements
 codeclimate-test-reporter
 pycodestyle
