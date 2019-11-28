@@ -2,34 +2,71 @@
 # Copyright 2017 Rusty Bower
 # Licensed under the Eiffel Forum License 2
 import arrow
-import datetime
-import requests
+import json
 
+from requests import Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+
+from sopel.formatting import color, colors
 from sopel.module import commands, example
 
 # List of valid currencies - https://coinmarketcap.com/api/
 CURRENCIES = ["AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK", "EUR", "GBP", "HKD", "HUF", "IDR", "ILS", "INR", "JPY", "KRW", "MXN", "MYR", "NOK", "NZD", "PHP", "PKR", "PLN", "RUB", "SEK", "SGD", "THB", "TRY", "TWD", "ZAR"]
 
 
-def display(bot, data, currency):
-    name = data['name']
-    # if price > $1, round to 2 decimals
-    if float(data['price_{currency}'.format(currency=currency.lower())]) > 1:
-        price = round(float(data['price_{currency}'.format(currency=currency.lower())]), 2)
+def display(data, crypto, currency):
+    price = data['data'][crypto.upper()]['quote'][currency.upper()]['price']
+    percent_change_1h = data['data'][crypto.upper()]['quote'][currency.upper()]['percent_change_1h']
+    last_updated = data['data'][crypto.upper()]['quote'][currency.upper()]['last_updated']
+
+    message = (
+        '{crypto} ${price:g} '
+    )
+
+    if percent_change_1h >= 0:
+        message += color('({percent_change_1h:.2f}%)', colors.GREEN)
+        message += color(u'\u2b06', colors.GREEN)
     else:
-        price = data['price_{currency}'.format(currency=currency.lower())]
-    last_updated = arrow.get(datetime.datetime.utcfromtimestamp(int(data['last_updated'])).strftime('%Y-%m-%d %H:%M:%S UTC')).humanize()
-    bot.say('{name} - {price} {currency} (Last Updated: {last_updated})'.format(name=name, price=price, currency=currency.upper(), last_updated=last_updated))
+        message += color('({percent_change_1h:.2f}%)', colors.RED)
+        message += color(u'\u2b07', colors.RED)
+
+    message += ' (Last Updated: {last_updated})'
+
+    message = message.format(
+        crypto=crypto.upper(),
+        price=float(price),
+        percent_change_1h=float(percent_change_1h),
+        last_updated=arrow.get(last_updated).humanize(),
+    )
+
+    print(message)
+
+    return message
 
 
 def get_rate(bot, crypto, currency='USD'):
     data = None
     # Ensure we are querying on a valid currency
     if currency.upper() in CURRENCIES or currency.upper() == 'USD':
+        #data = requests.get('https://api.coinmarketcap.com/v1/ticker/{crypto}/?convert={currency}'.format(crypto=crypto, currency=currency)).json()[0]
+        url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+        parameters = {
+            'symbol': crypto.upper(),
+            'convert': currency.upper(),
+        }
+        headers = {
+            'Accepts': 'application/json',
+            'X-CMC_PRO_API_KEY': 'c2cc882d-a4e4-4f2f-8cec-39633ff652cc',
+        }
+        session = Session()
+        session.headers.update(headers)
+
         try:
-            data = requests.get('https://api.coinmarketcap.com/v1/ticker/{crypto}/?convert={currency}'.format(crypto=crypto, currency=currency)).json()[0]
-            return data
-        except Exception:
+            response = session.get(url, params=parameters)
+            data = json.loads(response.text)
+            return display(data, crypto, currency)
+        except (ConnectionError, Timeout, TooManyRedirects) as e:
+            print(e)
             raise
 
 
@@ -40,10 +77,7 @@ def bitcoin(bot, trigger):
     # Set default currency to USD
     currency = trigger.group(2) or 'USD'
     # Get data from API
-    data = get_rate(bot, 'bitcoin', currency)
-    # Have the bot print the data
-    if data:
-        display(bot, data, currency)
+    bot.say(get_rate(bot, 'btc', currency))
 
 
 @commands('doge', 'dogecoin')
@@ -53,10 +87,7 @@ def dogecoin(bot, trigger):
     # Set default currency to USD
     currency = trigger.group(2) or 'USD'
     # Get data from API
-    data = get_rate(bot, 'dogecoin', currency)
-    # Have the bot print the data
-    if data:
-        display(bot, data, currency)
+    bot.say(get_rate(bot, 'doge', currency))
 
 
 @commands('eth', 'ethereum')
@@ -66,10 +97,7 @@ def ethereum(bot, trigger):
     # Set default currency to USD
     currency = trigger.group(2) or 'USD'
     # Get data from API
-    data = get_rate(bot, 'ethereum', currency)
-    # Have the bot print the data
-    if data:
-        display(bot, data, currency)
+    bot.say(get_rate(bot, 'eth', currency))
 
 
 @commands('ltc', 'litecoin')
@@ -79,7 +107,4 @@ def litecoin(bot, trigger):
     # Set default currency to USD
     currency = trigger.group(2) or 'USD'
     # Get data from API
-    data = get_rate(bot, 'litecoin', currency)
-    # Have the bot print the data
-    if data:
-        display(bot, data, currency)
+    bot.say(get_rate(bot, 'ltc', currency))
