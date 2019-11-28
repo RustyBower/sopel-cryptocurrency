@@ -48,7 +48,6 @@ def get_rate(bot, crypto, currency='USD'):
     data = None
     # Ensure we are querying on a valid currency
     if currency.upper() in CURRENCIES or currency.upper() == 'USD':
-        #data = requests.get('https://api.coinmarketcap.com/v1/ticker/{crypto}/?convert={currency}'.format(crypto=crypto, currency=currency)).json()[0]
         url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
         parameters = {
             'symbol': crypto.upper(),
