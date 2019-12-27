@@ -1,14 +1,18 @@
 language: python
 python:
-- '3.5'
-- '3.6'
-- '3.7'
-- '3.8'
+  - '3.5'
+  - '3.6'
+  - '3.7'
+  - '3.8'
 before_install:
-- pip install git+https://github.com/sopel-irc/sopel.git
-install: pip install -e .
+  - pip install git+https://github.com/sopel-irc/sopel.git
+install:
+  - pip install -e .
+  - pip install -r tests/requirements.txt
 script:
-- pycodestyle --show-source --ignore=E501,E402,E722  ./
+  - pycodestyle --show-source --ignore=E501,E402,E722  ./
+  - coverage run -m py.test -v .
+  - coverage report
 deploy:
   provider: pypi
   user: rustybower

@@ -21,7 +21,7 @@ with open('NEWS') as history_file:
 with open('requirements.txt') as requirements_file:
     requirements = [req for req in requirements_file.readlines()]
 
-with open('dev-requirements.txt') as dev_requirements_file:
+with open('tests/requirements.txt') as dev_requirements_file:
     dev_requirements = [req for req in dev_requirements_file.readlines()]
 
 
@@ -30,7 +30,7 @@ setup(
     version='1.1.1',
     description='Cryptocurrency Lookup',
     long_description=readme + '\n\n' + history,
-    long_description_content_type='text/markdown',
+    long_description_content_type='text/x-rst',
     author='Rusty Bower',
     author_email='rusty@rustybower.com',
     url='http://github.com/rustybower/sopel-cryptocurrency',

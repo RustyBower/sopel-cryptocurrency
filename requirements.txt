@@ -2,9 +2,3 @@ arrow
 datetime
 requests
 sopel
-# Development requirements
-codeclimate-test-reporter
-pycodestyle
-pytest
-pytest-cov
-mock
