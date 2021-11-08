@@ -117,7 +117,7 @@ def litecoin(bot, trigger):
 @commands('coin', 'cryptocoin')
 @example('.coin MATIC')
 @example('.coin MATIC USD')
-def litecoin(bot, trigger):
+def coin(bot, trigger):
     coin = trigger.group(2) or 'BTC'
     # Set default currency to USD
     currency = trigger.group(3) or 'USD'
