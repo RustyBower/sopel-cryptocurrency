@@ -15,6 +15,11 @@ CURRENCIES = ["AUD", "BRL", "CAD", "CHF", "CLP", "CNY", "CZK", "DKK", "EUR", "GB
 
 
 def display(data, crypto, currency):
+    if data['status']['error_code'] != 0:
+        message = 'Could not fetch data about {}'.format(crypto)
+        print(message + ': ' + data['status']['error_message'])
+        return message
+
     price = data['data'][crypto.upper()]['quote'][currency.upper()]['price']
     percent_change_1h = data['data'][crypto.upper()]['quote'][currency.upper()]['percent_change_1h']
     last_updated = data['data'][crypto.upper()]['quote'][currency.upper()]['last_updated']
@@ -107,3 +112,14 @@ def litecoin(bot, trigger):
     currency = trigger.group(2) or 'USD'
     # Get data from API
     bot.say(get_rate(bot, 'ltc', currency))
+
+
+@commands('coin', 'cryptocoin')
+@example('.coin MATIC')
+@example('.coin MATIC USD')
+def coin(bot, trigger):
+    coin = trigger.group(2) or 'BTC'
+    # Set default currency to USD
+    currency = trigger.group(3) or 'USD'
+    # Get data from API
+    bot.say(get_rate(bot, coin.lower(), currency))
