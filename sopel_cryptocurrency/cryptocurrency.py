@@ -1,14 +1,16 @@
 # coding=utf-8
 # Copyright 2017 Rusty Bower
 # Licensed under the Eiffel Forum License 2
+from __future__ import annotations
+
 import arrow
-import json
 
 from requests import Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 
+from sopel import plugin
+from sopel.config.types import StaticSection, ValidatedAttribute
 from sopel.formatting import color, colors
-from sopel.module import commands, example
 
 # List of valid currencies - https://coinmarketcap.com/api/
 CURRENCIES = [
@@ -46,10 +48,24 @@ CURRENCIES = [
 ]
 
 
+class CryptocurrencySection(StaticSection):
+    api_key = ValidatedAttribute("api_key", str, default="")
+
+
+def setup(bot):
+    bot.settings.define_section("cryptocurrency", CryptocurrencySection)
+
+
+def configure(config):
+    config.define_section("cryptocurrency", CryptocurrencySection)
+    config.cryptocurrency.configure_setting(
+        "api_key", "Enter your CoinMarketCap API key:"
+    )
+
+
 def display(data, crypto, currency):
     if data["status"]["error_code"] != 0:
         message = "Could not fetch data about {}".format(crypto)
-        print(message + ": " + data["status"]["error_message"])
         return message
 
     price = data["data"][crypto.upper()]["quote"][currency.upper()]["price"]
@@ -78,85 +94,77 @@ def display(data, crypto, currency):
         last_updated=arrow.get(last_updated).humanize(),
     )
 
-    print(message)
-
     return message
 
 
 def get_rate(bot, crypto, currency="USD"):
-    data = None
-    # Ensure we are querying on a valid currency
-    if currency.upper() in CURRENCIES or currency.upper() == "USD":
-        url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
-        parameters = {
-            "symbol": crypto.upper(),
-            "convert": currency.upper(),
-        }
-        headers = {
-            "Accepts": "application/json",
-            "X-CMC_PRO_API_KEY": "c2cc882d-a4e4-4f2f-8cec-39633ff652cc",
-        }
-        session = Session()
-        session.headers.update(headers)
+    if currency.upper() not in CURRENCIES and currency.upper() != "USD":
+        return "Invalid currency"
 
-        try:
-            response = session.get(url, params=parameters)
-            # data = json.loads(response.text)
-            data = response.json()
-            return display(data, crypto, currency)
-        except (ConnectionError, Timeout, TooManyRedirects) as e:
-            print(e)
-            raise
-    else:
-        raise "Invalid currency"
+    if not bot.settings.cryptocurrency.api_key:
+        return "CoinMarketCap API key not configured"
+
+    url = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest"
+    parameters = {
+        "symbol": crypto.upper(),
+        "convert": currency.upper(),
+    }
+    headers = {
+        "Accepts": "application/json",
+        "X-CMC_PRO_API_KEY": bot.settings.cryptocurrency.api_key,
+    }
+    session = Session()
+    session.headers.update(headers)
+
+    try:
+        response = session.get(url, params=parameters)
+        data = response.json()
+        return display(data, crypto, currency)
+    except (ConnectionError, Timeout, TooManyRedirects):
+        return "Error connecting to CoinMarketCap API"
 
 
-@commands("btc", "bitcoin")
-@example(".btc")
-@example(".btc USD")
+@plugin.command("btc", "bitcoin")
+@plugin.example(".btc")
+@plugin.example(".btc USD")
 def bitcoin(bot, trigger):
-    # Set default currency to USD
+    """Look up Bitcoin price."""
     currency = trigger.group(2) or "USD"
-    # Get data from API
     bot.say(get_rate(bot, "btc", currency))
 
 
-@commands("doge", "dogecoin")
-@example(".doge")
-@example(".doge USD")
+@plugin.command("doge", "dogecoin")
+@plugin.example(".doge")
+@plugin.example(".doge USD")
 def dogecoin(bot, trigger):
-    # Set default currency to USD
+    """Look up Dogecoin price."""
     currency = trigger.group(2) or "USD"
-    # Get data from API
     bot.say(get_rate(bot, "doge", currency))
 
 
-@commands("eth", "ethereum")
-@example(".eth")
-@example(".eth USD")
+@plugin.command("eth", "ethereum")
+@plugin.example(".eth")
+@plugin.example(".eth USD")
 def ethereum(bot, trigger):
-    # Set default currency to USD
+    """Look up Ethereum price."""
     currency = trigger.group(2) or "USD"
-    # Get data from API
     bot.say(get_rate(bot, "eth", currency))
 
 
-@commands("ltc", "litecoin")
-@example(".ltc")
-@example(".ltc USD")
+@plugin.command("ltc", "litecoin")
+@plugin.example(".ltc")
+@plugin.example(".ltc USD")
 def litecoin(bot, trigger):
-    # Set default currency to USD
+    """Look up Litecoin price."""
     currency = trigger.group(2) or "USD"
-    # Get data from API
     bot.say(get_rate(bot, "ltc", currency))
 
 
-@commands("coin", "cryptocoin")
-@example(".coin MATIC")
-@example(".coin MATIC USD")
+@plugin.command("coin", "cryptocoin")
+@plugin.example(".coin MATIC")
+@plugin.example(".coin MATIC USD")
 def coin(bot, trigger):
-    coin = trigger.group(3) or "BTC"
-    # Set default currency to USD
+    """Look up any cryptocurrency price."""
+    coin_symbol = trigger.group(3) or "BTC"
     currency = trigger.group(4) or "USD"
-    # Get data from API
-    bot.say(get_rate(bot, coin.lower(), currency))
+    bot.say(get_rate(bot, coin_symbol.lower(), currency))
