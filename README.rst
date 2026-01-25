@@ -4,6 +4,13 @@
 
 |version| |build| |issues| |alerts| |coverage-status| |license|
 
+**Important: This package is no longer updated. Please install sopel-cryptocurrency for use with Sopel 8.0 and higher.**
+
+.. code-block::
+
+    pip uninstall sopel-modules.cryptocurrency
+    pip install sopel-cryptocurrency
+
 Introduction
 ============
 sopel-cryptocurrency is a cryptocurrency lookup module for Sopel.
